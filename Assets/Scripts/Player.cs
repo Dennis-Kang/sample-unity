@@ -8,6 +8,9 @@ public class Player : MonoBehaviour
     Rigidbody2D rigid;
     Vector2     velocity;
     bool        isDeath;
+    bool        isJumpAble = false;
+    bool        isJumpTrigger = false;
+    float       jumpPower = 300f;
 
     void Awake()
     {
@@ -28,7 +31,23 @@ public class Player : MonoBehaviour
         velocity.y = rigid.velocity.y;
         rigid.velocity = velocity;
         // transform.Translate(new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")) * Time.deltaTime * 15f);
+
+        if (Input.GetKeyDown(KeyCode.Space) && isJumpAble == true)
+        {
+            isJumpTrigger = true;
+            isJumpAble = false;
+        }
     }
+
+    void FixedUpdate()
+    {
+        if (isJumpTrigger == true)
+        {
+            rigid.AddForce(Vector2.up * jumpPower);
+            isJumpTrigger = false;
+        }
+    }
+
     void OnCollisionEnter2D(Collision2D collisionObject)
     {
         if (isDeath == true)
@@ -44,6 +63,10 @@ public class Player : MonoBehaviour
             timerComponent.enabled = false;
             
             isDeath = true;
+        }
+        if (collisionObject.transform.tag.Equals("Ground"))
+        {
+            isJumpAble = true;
         }
     }
 
